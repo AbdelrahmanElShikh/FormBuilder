@@ -1,0 +1,2 @@
+rootProject.name = "FormApplication"
+include ':app'

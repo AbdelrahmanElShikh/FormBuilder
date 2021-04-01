@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">FormApplication</string>
+    <string name="address">Address</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="account_number">Account Number</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="relation_to_beneficiary">Relation to beneficiary</string>
+    <string name="empty" translatable="false"> </string>
+    <string name="name">Name</string>
+    <string name="street">Street</string>
+    <string name="number_iban" translatable="false">Number / IBAN</string>
+    <string name="account">Account</string>
+    <string name="currency">Currency</string>
+    <string name="select_currency">Select Currency</string>
+    <string name="select_country">Select Country</string>
+    <string name="select_city">Select City</string>
+    <string name="new_beneficiary">New Beneficiary</string>
+    <string name="choose_number">Choose Number</string>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph.xml"
+    app:startDestination="@id/beneficiaryFragment">
+
+    <fragment
+        android:id="@+id/beneficiaryFragment"
+        android:name="com.abdelrahman.formapplication.beneficiary.BeneficiaryFragment"
+        tools:layout="@layout/fragment_beneficiary"
+        android:label="@string/new_beneficiary">
+        <action
+            android:id="@+id/action_beneficiaryFragment_to_numbersFragment"
+            app:destination="@id/numbersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/numbersFragment"
+        android:name="com.abdelrahman.formapplication.numbers.NumbersFragment"
+        tools:layout="@layout/fragment_numbers"
+        android:label="@string/choose_number">
+        <argument
+            android:name="selectedNumber"
+            app:argType="java.lang.Integer"
+            app:nullable="true" />
+        <argument
+            android:name="selectedType"
+            app:argType="com.abdelrahman.formapplication.numbers.NumberSelectionType"
+            app:nullable="false" />
+    </fragment>
+</navigation>
