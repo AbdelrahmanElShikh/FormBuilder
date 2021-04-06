@@ -13,18 +13,21 @@ public interface FormItem {
 
     void setTitle(Integer title);
 
-
     Object getValue();
 
     void setValue(Object value);
 
-    //TODO : make observer to get value (from Form to formItem)
-
     int getLayoutResource();
+
+    boolean isRequired();
+
+    void setIsRequired(boolean isRequired);
 
     RecyclerView.ViewHolder getViewHolder(@NonNull View itemView, FormItem item);
 
     ValueChangeObserver getValueChangeObserver();
 
     void setChangeObserver(ValueChangeObserver observer);
+
+    boolean isValid();
 }

@@ -11,11 +11,11 @@ import com.abdelrahman.formapplication.forms.FormBinder;
 import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.forms.select.SelectableFormItem;
 
-public class SelectableFormItemViewHolder extends RecyclerView.ViewHolder implements FormBinder, View.OnClickListener {
+public class SelectableViewHolder extends RecyclerView.ViewHolder implements FormBinder, View.OnClickListener {
     private final SelectableFormItemBinding binding;
     private final SelectableFormItem item;
 
-    public SelectableFormItemViewHolder(@NonNull View itemView, FormItem item) {
+    public SelectableViewHolder(@NonNull View itemView, FormItem item) {
         super(itemView);
         binding = DataBindingUtil.bind(itemView);
         this.item = (SelectableFormItem) item;

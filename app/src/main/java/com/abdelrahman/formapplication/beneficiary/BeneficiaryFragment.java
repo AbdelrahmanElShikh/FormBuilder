@@ -20,7 +20,7 @@ import com.abdelrahman.formapplication.adapter.FormAdapter;
 import com.abdelrahman.formapplication.databinding.FragmentBeneficiaryBinding;
 import com.abdelrahman.formapplication.listeners.UpdateView;
 
-public class BeneficiaryFragment extends Fragment implements View.OnClickListener, UpdateView {
+public class BeneficiaryFragment extends Fragment implements UpdateView {
     private FragmentBeneficiaryBinding binding;
     private FormAdapter adapter;
     private BeneficiaryForm beneficiaryForm;
@@ -31,7 +31,8 @@ public class BeneficiaryFragment extends Fragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
+        beneficiaryForm = new BeneficiaryForm(this, this);
+        adapter = new FormAdapter(beneficiaryForm.getFormItems());
     }
 
     @Nullable
@@ -44,11 +45,9 @@ public class BeneficiaryFragment extends Fragment implements View.OnClickListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        beneficiaryForm = new BeneficiaryForm(this, this);
-        adapter = new FormAdapter(beneficiaryForm.getFormItems());
         binding.rv.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rv.setAdapter(adapter);
-        binding.btn.setOnClickListener(this);
+        binding.btn.setOnClickListener(v -> {});
         viewModel.getSelectedCurrency().observe(getViewLifecycleOwner(),
                 o -> beneficiaryForm
                         .getCurrencySelectFormItem()
@@ -69,10 +68,6 @@ public class BeneficiaryFragment extends Fragment implements View.OnClickListene
 
     }
 
-    @Override
-    public void onClick(View v) {
-
-    }
 
     public NavController getNavigationController() {
         return Navigation.findNavController(requireView());
@@ -81,5 +76,15 @@ public class BeneficiaryFragment extends Fragment implements View.OnClickListene
     @Override
     public void updateView(int position) {
         adapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void notifyDataChange() {
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void scrollToPosition(int position) {
+        binding.rv.post(() -> binding.rv.smoothScrollToPosition(position));
     }
 }

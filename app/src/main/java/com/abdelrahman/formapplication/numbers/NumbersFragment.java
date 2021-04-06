@@ -54,7 +54,6 @@ public class NumbersFragment extends Fragment implements OnNumberClick {
                 viewModel.selectCountry(clickedNumber);
                 break;
         }
-
         getNavigationController().navigateUp();
 
     }

@@ -6,16 +6,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abdelrahman.formapplication.R;
-import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
+import com.abdelrahman.formapplication.adapter.viewholders.SelectableViewHolder;
 import com.abdelrahman.formapplication.forms.FormItem;
-import com.abdelrahman.formapplication.adapter.viewholders.SelectableFormItemViewHolder;
 import com.abdelrahman.formapplication.listeners.SelectionObserver;
+import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 public class SelectFormItem implements SelectableFormItem {
     private Object value;
     private Integer titleRes;
     private Integer hint;
     private boolean isSelectable;
+    private boolean isRequired;
     private SelectionObserver selectionObserver;
     private ValueChangeObserver observer;
 
@@ -24,6 +25,7 @@ public class SelectFormItem implements SelectableFormItem {
         private final Integer titleRes;
         private final Integer hint;
         private boolean isSelectable = true;
+        private boolean isRequired = true;
         private SelectionObserver selectionObserver;
         private ValueChangeObserver observer;
 
@@ -39,6 +41,11 @@ public class SelectFormItem implements SelectableFormItem {
 
         public Builder isSelectable(boolean isSelectable) {
             this.isSelectable = isSelectable;
+            return this;
+        }
+
+        public Builder isRequired(boolean isRequired) {
+            this.isRequired = isRequired;
             return this;
         }
 
@@ -65,6 +72,7 @@ public class SelectFormItem implements SelectableFormItem {
         this.isSelectable = builder.isSelectable;
         this.selectionObserver = builder.selectionObserver;
         this.observer = builder.observer;
+        this.isRequired = builder.isRequired;
     }
 
     @Override
@@ -123,8 +131,18 @@ public class SelectFormItem implements SelectableFormItem {
     }
 
     @Override
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    @Override
+    public void setIsRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    @Override
     public RecyclerView.ViewHolder getViewHolder(@NonNull View itemView, FormItem formItem) {
-        return new SelectableFormItemViewHolder(itemView, formItem);
+        return new SelectableViewHolder(itemView, formItem);
     }
 
     @Override
@@ -135,5 +153,10 @@ public class SelectFormItem implements SelectableFormItem {
     @Override
     public void setChangeObserver(ValueChangeObserver observer) {
         this.observer = observer;
+    }
+
+    @Override
+    public boolean isValid() {
+        return false;
     }
 }

@@ -10,9 +10,11 @@ import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.forms.edit.EditFormItem;
 import com.abdelrahman.formapplication.forms.edit.EditableFormItem;
 import com.abdelrahman.formapplication.forms.select.SelectFormItem;
+import com.abdelrahman.formapplication.forms.switchitem.SwitchFormItem;
 import com.abdelrahman.formapplication.listeners.SelectionObserver;
 import com.abdelrahman.formapplication.listeners.UpdateView;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
+import com.abdelrahman.formapplication.model.Beneficiary;
 import com.abdelrahman.formapplication.numbers.NumberSelectionType;
 
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
     private final UpdateView listener;
     private final Fragment context;
 
+    private final Beneficiary beneficiary = new Beneficiary();
     private final List<FormItem> beneficiaryFormItems = new ArrayList<>();
 
     private final EditableFormItem accountNumberFormItem =
@@ -30,12 +33,14 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .withPlaceHolder(R.string.number_iban)
                     .withMaxLength(34)
                     .withDigits("abcdefghijklmnopqrstuvwxyz1234567890")
+                    .withValueChangeObserver(this)
                     .build();
 
     private final EditFormItem nameFormItem =
             new EditFormItem.Builder()
                     .withPlaceHolder(R.string.name)
                     .withMaxLength(35)
+                    .withValueChangeObserver(this)
                     .build();
 
     private final EditFormItem phoneNumberFormItem =
@@ -43,12 +48,14 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .withPlaceHolder(R.string.phone_number)
                     .withMaxLength(15)
                     .withKeyboardInputType(InputType.TYPE_CLASS_PHONE)
+                    .withValueChangeObserver(this)
                     .build();
 
     private final EditFormItem relationToBeneficiaryFormItem =
             new EditFormItem.Builder()
                     .withMaxLength(50)
                     .withPlaceHolder(R.string.relation_to_beneficiary)
+                    .withValueChangeObserver(this)
                     .build();
 
     private final EditableFormItem addressFormItem =
@@ -80,6 +87,52 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .withSelectionObserver(this)
                     .build();
 
+    private final SwitchFormItem otherBankSwitch =
+            new SwitchFormItem.Builder(R.string.other_bank)
+                    .withValueChangeObserver(this)
+                    .build();
+
+    private final EditFormItem swiftCodeEditFormItem =
+            new EditFormItem.Builder()
+                    .withMaxLength(11)
+                    .withTitleRes(R.string.swift_code)
+                    .withPlaceHolder(R.string.swift_code)
+                    .withKeyboardInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS)
+                    .withValueChangeObserver(this)
+                    .build();
+
+    private final SelectFormItem swiftCountryFormItem =
+            new SelectFormItem.Builder(R.string.country, R.string.select_country)
+                    .withValueChangeObserver(this)
+                    .withSelectionObserver(this)
+                    .build();
+
+    private final SelectFormItem swiftNameFormItem =
+            new SelectFormItem.Builder(R.string.name, R.string.select_name)
+                    .isSelectable(false)
+                    .withValueChangeObserver(this)
+                    .withSelectionObserver(this)
+                    .build();
+
+    private final SelectFormItem swiftCityFormItem =
+            new SelectFormItem.Builder(R.string.city, R.string.select_city)
+                    .isSelectable(false)
+                    .withValueChangeObserver(this)
+                    .withSelectionObserver(this)
+                    .build();
+
+    private final SelectFormItem swiftBranchFormItem =
+            new SelectFormItem.Builder(R.string.branch, R.string.select_branch)
+                    .isSelectable(false)
+                    .withValueChangeObserver(this)
+                    .withSelectionObserver(this)
+                    .build();
+
+    private final SelectFormItem swiftAddressFormItem =
+            new SelectFormItem.Builder(R.string.address, R.string.empty)
+                    .isSelectable(false)
+                    .build();
+
 
     public BeneficiaryForm(UpdateView listener, Fragment context) {
         this.listener = listener;
@@ -92,6 +145,8 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         beneficiaryFormItems.add(addressFormItem);
         beneficiaryFormItems.add(countrySelectFormItem);
         beneficiaryFormItems.add(citySelectFormItem);
+        beneficiaryFormItems.add(otherBankSwitch);
+
     }
 
     @Override
@@ -102,15 +157,6 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
     @Override
     public boolean isValid() {
         return false;
-    }
-
-
-    public EditableFormItem getAddressFormItem() {
-        return addressFormItem;
-    }
-
-    public EditableFormItem getNameFormItem() {
-        return nameFormItem;
     }
 
     public SelectFormItem getCurrencySelectFormItem() {
@@ -129,6 +175,7 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
     public void onValueChange(FormItem formItem, Object changedValue) {
         if (formItem.equals(addressFormItem)) {
             String changedValueString = (String) changedValue;
+            beneficiary.setAddress(changedValueString);
             if (changedValueString.length() >= 4) {
                 addressFormItem.setError("error");
                 listener.updateView(getFormItemPosition(addressFormItem));
@@ -138,16 +185,57 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         } else if (formItem.equals(currencySelectFormItem)) {
             currencySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(currencySelectFormItem));
+            beneficiary.setAccountCurrencyCode((Integer) changedValue);
         } else if (formItem.equals(countrySelectFormItem)) {
             countrySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(countrySelectFormItem));
             citySelectFormItem.setIsSelectable(true);
             listener.updateView(getFormItemPosition(citySelectFormItem));
-        } else if (formItem.equals(citySelectFormItem)){
+            beneficiary.setCountryId((Integer) changedValue);
+        } else if (formItem.equals(citySelectFormItem)) {
             citySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(citySelectFormItem));
+            beneficiary.setCityId((Integer) changedValue);
+        } else if (formItem.equals(otherBankSwitch) && (boolean) changedValue) {
+            addOtherBankFormItems();
+            swiftCodeEditFormItem.setIsRequired(true);
+        } else if (formItem.equals(otherBankSwitch) && !((boolean) changedValue)) {
+            removeOtherBanksFormItems();
+            swiftCodeEditFormItem.setIsRequired(false);
+        } else if (formItem.equals(accountNumberFormItem)) {
+            beneficiary.setAccountNumber((String) changedValue);
+        } else if (formItem.equals(nameFormItem)) {
+            beneficiary.setName((String) changedValue);
+        } else if (formItem.equals(phoneNumberFormItem)) {
+            beneficiary.setPhoneNumber((String) changedValue);
+        } else if (formItem.equals(relationToBeneficiaryFormItem)) {
+            beneficiary.setRelation((String) changedValue);
+        } else if (formItem.equals(swiftCodeEditFormItem)) {
+            beneficiary.setSwiftCode((String) changedValue);
         }
 
+    }
+
+    private void removeOtherBanksFormItems() {
+        beneficiaryFormItems.remove(swiftCodeEditFormItem);
+        beneficiaryFormItems.remove(swiftCountryFormItem);
+        beneficiaryFormItems.remove(swiftNameFormItem);
+        beneficiaryFormItems.remove(swiftCityFormItem);
+        beneficiaryFormItems.remove(swiftBranchFormItem);
+        beneficiaryFormItems.remove(swiftAddressFormItem);
+        listener.notifyDataChange();
+        listener.scrollToPosition(getFormItemPosition(otherBankSwitch));
+    }
+
+    private void addOtherBankFormItems() {
+        beneficiaryFormItems.add(swiftCodeEditFormItem);
+        beneficiaryFormItems.add(swiftCountryFormItem);
+        beneficiaryFormItems.add(swiftNameFormItem);
+        beneficiaryFormItems.add(swiftCityFormItem);
+        beneficiaryFormItems.add(swiftBranchFormItem);
+        beneficiaryFormItems.add(swiftAddressFormItem);
+        listener.notifyDataChange();
+        listener.scrollToPosition(beneficiaryFormItems.size());
     }
 
     private int getFormItemPosition(FormItem formItem) {
@@ -162,11 +250,11 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
             );
         } else if (formItem.equals(countrySelectFormItem)) {
             ((BeneficiaryFragment) context).getNavigationController().navigate(
-                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) countrySelectFormItem.getValue(),NumberSelectionType.COUNTRY)
+                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) countrySelectFormItem.getValue(), NumberSelectionType.COUNTRY)
             );
-        } else if (formItem.equals(citySelectFormItem)){
+        } else if (formItem.equals(citySelectFormItem)) {
             ((BeneficiaryFragment) context).getNavigationController().navigate(
-                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) citySelectFormItem.getValue(),NumberSelectionType.CITY)
+                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) citySelectFormItem.getValue(), NumberSelectionType.CITY)
             );
         }
     }

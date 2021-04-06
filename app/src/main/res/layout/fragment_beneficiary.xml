@@ -12,11 +12,11 @@
             android:id="@+id/rv"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            tools:listitem="@layout/selectable_form_item"
             app:layout_constraintBottom_toTopOf="@id/btn"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/selectable_form_item" />
 
         <Button
             android:id="@+id/btn"
@@ -24,9 +24,9 @@
             android:layout_width="@dimen/_150sdp"
             android:layout_height="wrap_content"
             android:text="Validate"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

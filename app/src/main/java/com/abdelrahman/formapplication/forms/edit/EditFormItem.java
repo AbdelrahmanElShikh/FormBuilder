@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abdelrahman.formapplication.R;
-import com.abdelrahman.formapplication.adapter.viewholders.EditableFormItemViewHolder;
+import com.abdelrahman.formapplication.adapter.viewholders.EditableViewHolder;
 import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
@@ -19,6 +19,7 @@ public class EditFormItem implements EditableFormItem {
     private String digits;
     private int maxLength;
     private int keyBoardType;
+    private boolean isRequired;
     private ValueChangeObserver observer;
 
     public static class Builder {
@@ -29,6 +30,7 @@ public class EditFormItem implements EditableFormItem {
         private String digits;
         private int maxLength;
         private int inputType;
+        private boolean isRequired = true;
         private ValueChangeObserver observer;
 
         public Builder() {
@@ -69,6 +71,11 @@ public class EditFormItem implements EditableFormItem {
             return this;
         }
 
+        public Builder isRequired(boolean isRequired) {
+            this.isRequired = isRequired;
+            return this;
+        }
+
         public Builder withValueChangeObserver(ValueChangeObserver observer) {
             this.observer = observer;
             return this;
@@ -89,6 +96,7 @@ public class EditFormItem implements EditableFormItem {
         this.keyBoardType = builder.inputType;
         this.digits = builder.digits;
         this.observer = builder.observer;
+        this.isRequired = builder.isRequired;
     }
 
     @Override
@@ -168,8 +176,18 @@ public class EditFormItem implements EditableFormItem {
     }
 
     @Override
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    @Override
+    public void setIsRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    @Override
     public RecyclerView.ViewHolder getViewHolder(@NonNull View itemView, FormItem formItem) {
-        return new EditableFormItemViewHolder(itemView, formItem);
+        return new EditableViewHolder(itemView, formItem);
     }
 
     @Override
@@ -180,6 +198,11 @@ public class EditFormItem implements EditableFormItem {
     @Override
     public void setPlaceHolder(Integer placeHolder) {
         this.placeHolder = placeHolder;
+    }
+
+    @Override
+    public boolean isValid() {
+        return false;
     }
 
 }

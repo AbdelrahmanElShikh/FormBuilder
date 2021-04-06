@@ -16,4 +16,9 @@
     <string name="select_city">اختار مدينة</string>
     <string name="new_beneficiary">مستفيد جديد</string>
     <string name="choose_number">اختار رقم</string>
+    <string name="other_bank">بنك اخر</string>
+    <string name="swift_code">رقم السويفت</string>
+    <string name="select_name">اختار اسم</string>
+    <string name="branch">الفرع</string>
+    <string name="select_branch">اختار الفرع</string>
 </resources>

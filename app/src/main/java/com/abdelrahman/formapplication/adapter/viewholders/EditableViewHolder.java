@@ -19,11 +19,11 @@ import com.abdelrahman.formapplication.forms.FormItem;
 
 import java.util.Objects;
 
-public class EditableFormItemViewHolder extends RecyclerView.ViewHolder implements FormBinder, TextWatcher {
+public class EditableViewHolder extends RecyclerView.ViewHolder implements FormBinder, TextWatcher {
     private final EditableFormItemBinding binding;
     private final EditableFormItem item;
 
-    public EditableFormItemViewHolder(@NonNull View itemView, FormItem item) {
+    public EditableViewHolder(@NonNull View itemView, FormItem item) {
         super(itemView);
         binding = DataBindingUtil.bind(itemView);
         this.item = (EditableFormItem) item;
