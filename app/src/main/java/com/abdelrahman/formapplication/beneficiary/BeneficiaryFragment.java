@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +48,7 @@ public class BeneficiaryFragment extends Fragment implements UpdateView {
         super.onViewCreated(view, savedInstanceState);
         binding.rv.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rv.setAdapter(adapter);
-        binding.btn.setOnClickListener(v -> {});
+        binding.btn.setOnClickListener(v -> Toast.makeText(getContext(),beneficiaryForm.isValid()+"" , Toast.LENGTH_SHORT).show());
         viewModel.getSelectedCurrency().observe(getViewLifecycleOwner(),
                 o -> beneficiaryForm
                         .getCurrencySelectFormItem()

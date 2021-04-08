@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.databinding.EditableFormItemBinding;
-import com.abdelrahman.formapplication.forms.edit.EditableFormItem;
 import com.abdelrahman.formapplication.forms.FormBinder;
 import com.abdelrahman.formapplication.forms.FormItem;
+import com.abdelrahman.formapplication.forms.edit.EditableFormItem;
 
 import java.util.Objects;
 
@@ -69,6 +69,5 @@ public class EditableViewHolder extends RecyclerView.ViewHolder implements FormB
     @Override
     public void afterTextChanged(Editable s) {
         item.setValue(s.toString());
-
     }
 }

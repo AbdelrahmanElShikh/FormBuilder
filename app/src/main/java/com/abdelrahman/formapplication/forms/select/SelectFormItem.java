@@ -9,6 +9,7 @@ import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.adapter.viewholders.SelectableViewHolder;
 import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.listeners.SelectionObserver;
+import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 public class SelectFormItem implements SelectableFormItem {
@@ -19,6 +20,7 @@ public class SelectFormItem implements SelectableFormItem {
     private boolean isRequired;
     private SelectionObserver selectionObserver;
     private ValueChangeObserver observer;
+    private ValidationFailedObserver validationObserver;
 
     public static class Builder {
         private Object value;
@@ -28,6 +30,7 @@ public class SelectFormItem implements SelectableFormItem {
         private boolean isRequired = true;
         private SelectionObserver selectionObserver;
         private ValueChangeObserver observer;
+        private ValidationFailedObserver validationObserver;
 
         public Builder(int titleRes, int hint) {
             this.titleRes = titleRes;
@@ -59,6 +62,11 @@ public class SelectFormItem implements SelectableFormItem {
             return this;
         }
 
+        public Builder withValidationFailedObserver(ValidationFailedObserver validationObserver) {
+            this.validationObserver = validationObserver;
+            return this;
+        }
+
         public SelectFormItem build() {
             return new SelectFormItem(this);
         }
@@ -73,6 +81,7 @@ public class SelectFormItem implements SelectableFormItem {
         this.selectionObserver = builder.selectionObserver;
         this.observer = builder.observer;
         this.isRequired = builder.isRequired;
+        this.validationObserver = builder.validationObserver;
     }
 
     @Override
@@ -153,6 +162,16 @@ public class SelectFormItem implements SelectableFormItem {
     @Override
     public void setChangeObserver(ValueChangeObserver observer) {
         this.observer = observer;
+    }
+
+    @Override
+    public ValidationFailedObserver getValidationFailedObserver() {
+        return validationObserver;
+    }
+
+    @Override
+    public void setValidationFailedObserver(ValidationFailedObserver validationObserver) {
+        this.validationObserver = validationObserver;
     }
 
     @Override

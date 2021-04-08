@@ -5,6 +5,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 
@@ -28,6 +29,10 @@ public interface FormItem {
     ValueChangeObserver getValueChangeObserver();
 
     void setChangeObserver(ValueChangeObserver observer);
+
+    ValidationFailedObserver getValidationFailedObserver();
+
+    void setValidationFailedObserver(ValidationFailedObserver validationObserver);
 
     boolean isValid();
 }

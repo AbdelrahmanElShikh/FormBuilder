@@ -10,9 +10,11 @@ import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.forms.edit.EditFormItem;
 import com.abdelrahman.formapplication.forms.edit.EditableFormItem;
 import com.abdelrahman.formapplication.forms.select.SelectFormItem;
+import com.abdelrahman.formapplication.forms.select.SelectableFormItem;
 import com.abdelrahman.formapplication.forms.switchitem.SwitchFormItem;
 import com.abdelrahman.formapplication.listeners.SelectionObserver;
 import com.abdelrahman.formapplication.listeners.UpdateView;
+import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 import com.abdelrahman.formapplication.model.Beneficiary;
 import com.abdelrahman.formapplication.numbers.NumberSelectionType;
@@ -20,7 +22,7 @@ import com.abdelrahman.formapplication.numbers.NumberSelectionType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObserver {
+public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObserver, ValidationFailedObserver {
     private final UpdateView listener;
     private final Fragment context;
 
@@ -34,6 +36,8 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .withMaxLength(34)
                     .withDigits("abcdefghijklmnopqrstuvwxyz1234567890")
                     .withValueChangeObserver(this)
+                    .withValidationFailedObserver(this)
+                    .isRequired(false)
                     .build();
 
     private final EditFormItem nameFormItem =
@@ -64,6 +68,7 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .withPlaceHolder(R.string.street)
                     .withMaxLength(50)
                     .withValueChangeObserver(this)
+                    .withValidationFailedObserver(this)
                     .build();
 
     private final SelectFormItem currencySelectFormItem =
@@ -146,7 +151,6 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         beneficiaryFormItems.add(countrySelectFormItem);
         beneficiaryFormItems.add(citySelectFormItem);
         beneficiaryFormItems.add(otherBankSwitch);
-
     }
 
     @Override
@@ -156,7 +160,15 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
 
     @Override
     public boolean isValid() {
-        return false;
+        boolean isValid = true;
+        for (FormItem item : beneficiaryFormItems) {
+            if (!item.isValid()) {
+                if (item.getValidationFailedObserver() != null)
+                    item.getValidationFailedObserver().onValidationFailure(item);
+                isValid = false;
+            }
+        }
+        return isValid;
     }
 
     public SelectFormItem getCurrencySelectFormItem() {
@@ -171,16 +183,19 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         return citySelectFormItem;
     }
 
+    //TODO : Enhance the Code and look for CIB IOS Code
+    //TODO : make it more generic if u can
     @Override
     public void onValueChange(FormItem formItem, Object changedValue) {
+        if (formItem instanceof EditFormItem)
+            ((EditFormItem) formItem).setError(null);
         if (formItem.equals(addressFormItem)) {
             String changedValueString = (String) changedValue;
             beneficiary.setAddress(changedValueString);
+            addressFormItem.setError(null);
             if (changedValueString.length() >= 4) {
                 addressFormItem.setError("error");
                 listener.updateView(getFormItemPosition(addressFormItem));
-            } else {
-                addressFormItem.setError(null);
             }
         } else if (formItem.equals(currencySelectFormItem)) {
             currencySelectFormItem.setValue(changedValue);
@@ -257,5 +272,27 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) citySelectFormItem.getValue(), NumberSelectionType.CITY)
             );
         }
+    }
+
+    @Override
+    public void onValidationFailure(FormItem formItem) {
+        if (formItem.equals(accountNumberFormItem)) {
+            handleFormItemFailure((EditableFormItem) formItem,"invalid account number");
+        } else if (formItem.equals(addressFormItem)) {
+            handleFormItemFailure((EditableFormItem) formItem,"Invalid Address");
+        }
+    }
+    private void handleFormItemFailure(EditableFormItem formItem,String errorMessage){
+        int formItemIndex = getFormItemPosition(formItem);
+        formItem.setError(errorMessage);
+        listener.updateView(formItemIndex);
+        listener.scrollToPosition(formItemIndex);
+    }
+
+    private void handleFormItemFailure(SelectableFormItem formItem, String errorMessage){
+        int formItemIndex = getFormItemPosition(formItem);
+        //formItem.setError(errorMessage);
+        listener.updateView(formItemIndex);
+        listener.scrollToPosition(formItemIndex);
     }
 }

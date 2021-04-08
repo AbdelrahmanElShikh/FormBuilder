@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.adapter.viewholders.EditableViewHolder;
 import com.abdelrahman.formapplication.forms.FormItem;
+import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 public class EditFormItem implements EditableFormItem {
@@ -21,6 +22,7 @@ public class EditFormItem implements EditableFormItem {
     private int keyBoardType;
     private boolean isRequired;
     private ValueChangeObserver observer;
+    private ValidationFailedObserver validationObserver;
 
     public static class Builder {
         private Integer titleRes;
@@ -32,6 +34,7 @@ public class EditFormItem implements EditableFormItem {
         private int inputType;
         private boolean isRequired = true;
         private ValueChangeObserver observer;
+        private ValidationFailedObserver validationObserver;
 
         public Builder() {
         }
@@ -81,6 +84,11 @@ public class EditFormItem implements EditableFormItem {
             return this;
         }
 
+        public Builder withValidationFailedObserver(ValidationFailedObserver validationObserver) {
+            this.validationObserver = validationObserver;
+            return this;
+        }
+
         public EditFormItem build() {
             return new EditFormItem(this);
         }
@@ -97,6 +105,7 @@ public class EditFormItem implements EditableFormItem {
         this.digits = builder.digits;
         this.observer = builder.observer;
         this.isRequired = builder.isRequired;
+        this.validationObserver = builder.validationObserver;
     }
 
     @Override
@@ -165,6 +174,16 @@ public class EditFormItem implements EditableFormItem {
     }
 
     @Override
+    public ValidationFailedObserver getValidationFailedObserver() {
+        return validationObserver;
+    }
+
+    @Override
+    public void setValidationFailedObserver(ValidationFailedObserver validationObserver) {
+        this.validationObserver = validationObserver;
+    }
+
+    @Override
     public ValueChangeObserver getValueChangeObserver() {
         return observer;
     }
@@ -202,7 +221,12 @@ public class EditFormItem implements EditableFormItem {
 
     @Override
     public boolean isValid() {
-        return false;
+        boolean isAcceptedCriteria = value != null && !value.isEmpty() && value.length() <= maxLength && error == null;
+        if (!isRequired && isAcceptedCriteria)
+            return true;
+        else if (!isRequired)
+            return true;
+        else return isAcceptedCriteria;
     }
 
 }

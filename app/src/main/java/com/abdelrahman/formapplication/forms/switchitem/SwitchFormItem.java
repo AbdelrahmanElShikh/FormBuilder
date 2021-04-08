@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.adapter.viewholders.SwitchableViewHolder;
 import com.abdelrahman.formapplication.forms.FormItem;
+import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 public class SwitchFormItem implements FormItem {
@@ -16,12 +17,14 @@ public class SwitchFormItem implements FormItem {
     private Integer titleRes;
     private boolean isRequired;
     private ValueChangeObserver observer;
+    private ValidationFailedObserver validationObserver;
 
     public static class Builder {
         private Object value;
         private final Integer titleRes;
         private boolean isRequired = true;
         private ValueChangeObserver observer;
+        private ValidationFailedObserver validationObserver;
 
         public Builder(Integer titleRes) {
             this.titleRes = titleRes;
@@ -42,6 +45,11 @@ public class SwitchFormItem implements FormItem {
             return this;
         }
 
+        public Builder withValidationFailedObserver(ValidationFailedObserver validationObserver) {
+            this.validationObserver = validationObserver;
+            return this;
+        }
+
         public SwitchFormItem build() {
             return new SwitchFormItem(this);
         }
@@ -53,6 +61,7 @@ public class SwitchFormItem implements FormItem {
         this.titleRes = builder.titleRes;
         this.observer = builder.observer;
         this.isRequired = builder.isRequired;
+        this.validationObserver = builder.validationObserver;
     }
 
     @Override
@@ -106,7 +115,17 @@ public class SwitchFormItem implements FormItem {
     }
 
     @Override
+    public ValidationFailedObserver getValidationFailedObserver() {
+        return validationObserver;
+    }
+
+    @Override
+    public void setValidationFailedObserver(ValidationFailedObserver validationObserver) {
+        this.validationObserver = validationObserver;
+    }
+
+    @Override
     public boolean isValid() {
-        return false;
+        return true;
     }
 }
