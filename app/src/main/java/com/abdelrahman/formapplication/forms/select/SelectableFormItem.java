@@ -12,6 +12,10 @@ public interface SelectableFormItem extends FormItem, Serializable {
 
     Integer getHint();
 
+    String getError();
+
+    void setError(String error);
+
     void setHint(Integer hint);
 
     SelectionObserver getSelectionObserver();

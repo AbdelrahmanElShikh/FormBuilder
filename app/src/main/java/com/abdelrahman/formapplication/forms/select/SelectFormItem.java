@@ -13,9 +13,10 @@ import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 
 public class SelectFormItem implements SelectableFormItem {
-    private Object value;
+    private String value;
     private Integer titleRes;
     private Integer hint;
+    private String error;
     private boolean isSelectable;
     private boolean isRequired;
     private SelectionObserver selectionObserver;
@@ -23,11 +24,20 @@ public class SelectFormItem implements SelectableFormItem {
     private ValidationFailedObserver validationObserver;
 
     public static class Builder {
-        private Object value;
+        private String value;
         private final Integer titleRes;
         private final Integer hint;
+        /**
+         * selectable behavior is true by default,
+         * unless the user intentionally changed it.
+         */
         private boolean isSelectable = true;
+        /**
+         * required is true by default,
+         * unless the user intentionally changed it.
+         */
         private boolean isRequired = true;
+        private String error;
         private SelectionObserver selectionObserver;
         private ValueChangeObserver observer;
         private ValidationFailedObserver validationObserver;
@@ -37,8 +47,13 @@ public class SelectFormItem implements SelectableFormItem {
             this.hint = hint;
         }
 
-        public Builder withValue(Object value) {
+        public Builder withValue(String value) {
             this.value = value;
+            return this;
+        }
+
+        public Builder withError(String error) {
+            this.error = error;
             return this;
         }
 
@@ -82,6 +97,7 @@ public class SelectFormItem implements SelectableFormItem {
         this.observer = builder.observer;
         this.isRequired = builder.isRequired;
         this.validationObserver = builder.validationObserver;
+        this.error = builder.error;
     }
 
     @Override
@@ -97,6 +113,16 @@ public class SelectFormItem implements SelectableFormItem {
     @Override
     public Integer getHint() {
         return hint;
+    }
+
+    @Override
+    public String getError() {
+        return error;
+    }
+
+    @Override
+    public void setError(String error) {
+        this.error = error;
     }
 
     @Override
@@ -131,7 +157,7 @@ public class SelectFormItem implements SelectableFormItem {
 
     @Override
     public void setValue(Object value) {
-        this.value = value;
+        this.value = String.valueOf(value);
     }
 
     @Override
@@ -176,6 +202,11 @@ public class SelectFormItem implements SelectableFormItem {
 
     @Override
     public boolean isValid() {
-        return false;
+        boolean isAcceptedCriteria = value != null && !value.isEmpty();
+        if (!isRequired && isAcceptedCriteria)
+            return true;
+        else if (!isRequired)
+            return true;
+        else return isAcceptedCriteria;
     }
 }

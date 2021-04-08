@@ -14,9 +14,9 @@ import com.abdelrahman.formapplication.numbers.OnNumberClick;
 
 public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.NumberViewHolder> {
     private final OnNumberClick listener;
-    private final Integer selectedNumber;
+    private final String selectedNumber;
 
-    public NumberAdapter(OnNumberClick listener, Integer selectedNumber) {
+    public NumberAdapter(OnNumberClick listener, String selectedNumber) {
         this.listener = listener;
         this.selectedNumber = selectedNumber;
     }
@@ -50,10 +50,11 @@ public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.NumberView
         }
 
         public void bind(int position) {
-            binding.text.setText(String.valueOf(position));
+            String positionString = String.valueOf(position);
+            binding.text.setText(positionString);
             if (selectedNumber != null)
-                binding.imgCheck.setVisibility(selectedNumber.equals(position) ? View.VISIBLE : View.GONE);
-            binding.textItemParent.setOnClickListener(v -> listener.onNumberClick(position));
+                binding.imgCheck.setVisibility(selectedNumber.equals(positionString) ? View.VISIBLE : View.GONE);
+            binding.textItemParent.setOnClickListener(v -> listener.onNumberClick(positionString));
         }
     }
 }

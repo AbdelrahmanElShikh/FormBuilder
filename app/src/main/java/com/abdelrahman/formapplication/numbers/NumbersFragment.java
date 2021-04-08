@@ -21,7 +21,7 @@ import com.abdelrahman.formapplication.databinding.FragmentNumbersBinding;
 
 public class NumbersFragment extends Fragment implements OnNumberClick {
     private SharedViewModel viewModel;
-    private Integer selectedNumber;
+    private String selectedNumber;
     private NumberSelectionType SELECTION_TYPE;
 
     @Override
@@ -42,7 +42,7 @@ public class NumbersFragment extends Fragment implements OnNumberClick {
     }
 
     @Override
-    public void onNumberClick(int clickedNumber) {
+    public void onNumberClick(String clickedNumber) {
         switch (SELECTION_TYPE) {
             case CURRENCY:
                 viewModel.selectCurrency(clickedNumber);

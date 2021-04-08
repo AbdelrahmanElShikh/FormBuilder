@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.databinding.SelectableFormItemBinding;
 import com.abdelrahman.formapplication.forms.FormBinder;
 import com.abdelrahman.formapplication.forms.FormItem;
@@ -24,7 +25,13 @@ public class SelectableViewHolder extends RecyclerView.ViewHolder implements For
     @Override
     public void bind() {
         /* Binding Logic */
-        binding.selectableItemTitle.setText(item.getTitle());
+        if (item.getError() != null) {
+            binding.selectableItemTitle.setText(item.getError());
+            binding.selectableItemTitle.setTextColor(itemView.getContext().getResources().getColor(R.color.error));
+        } else {
+            binding.selectableItemTitle.setText(item.getTitle());
+        }
+
         if (item.getValue() == null)
             binding.selectableItemValue.setText(item.getHint());
         else

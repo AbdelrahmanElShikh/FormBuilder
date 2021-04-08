@@ -18,11 +18,12 @@ import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 import com.abdelrahman.formapplication.model.Beneficiary;
 import com.abdelrahman.formapplication.numbers.NumberSelectionType;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObserver, ValidationFailedObserver {
+public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObserver, ValidationFailedObserver {
     private final UpdateView listener;
     private final Fragment context;
 
@@ -37,7 +38,6 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
                     .withDigits("abcdefghijklmnopqrstuvwxyz1234567890")
                     .withValueChangeObserver(this)
                     .withValidationFailedObserver(this)
-                    .isRequired(false)
                     .build();
 
     private final EditFormItem nameFormItem =
@@ -75,6 +75,7 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
             new SelectFormItem.Builder(R.string.currency, R.string.select_currency)
                     .withSelectionObserver(this)
                     .withValueChangeObserver(this)
+                    .withValidationFailedObserver(this)
                     .build();
 
 
@@ -187,8 +188,10 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
     //TODO : make it more generic if u can
     @Override
     public void onValueChange(FormItem formItem, Object changedValue) {
-        if (formItem instanceof EditFormItem)
-            ((EditFormItem) formItem).setError(null);
+        if (formItem instanceof EditableFormItem)
+            ((EditableFormItem) formItem).setError(null);
+        if(formItem instanceof SelectableFormItem)
+            ((SelectableFormItem) formItem).setError(null);
         if (formItem.equals(addressFormItem)) {
             String changedValueString = (String) changedValue;
             beneficiary.setAddress(changedValueString);
@@ -200,17 +203,17 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
         } else if (formItem.equals(currencySelectFormItem)) {
             currencySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(currencySelectFormItem));
-            beneficiary.setAccountCurrencyCode((Integer) changedValue);
+            beneficiary.setAccountCurrencyCode(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(countrySelectFormItem)) {
             countrySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(countrySelectFormItem));
             citySelectFormItem.setIsSelectable(true);
             listener.updateView(getFormItemPosition(citySelectFormItem));
-            beneficiary.setCountryId((Integer) changedValue);
+            beneficiary.setCountryId(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(citySelectFormItem)) {
             citySelectFormItem.setValue(changedValue);
             listener.updateView(getFormItemPosition(citySelectFormItem));
-            beneficiary.setCityId((Integer) changedValue);
+            beneficiary.setCityId(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(otherBankSwitch) && (boolean) changedValue) {
             addOtherBankFormItems();
             swiftCodeEditFormItem.setIsRequired(true);
@@ -261,15 +264,15 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
     public void onUserSelect(FormItem formItem) {
         if (formItem.equals(currencySelectFormItem)) {
             ((BeneficiaryFragment) context).getNavigationController().navigate(
-                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) currencySelectFormItem.getValue(), NumberSelectionType.CURRENCY)
+                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((String) currencySelectFormItem.getValue(), NumberSelectionType.CURRENCY)
             );
         } else if (formItem.equals(countrySelectFormItem)) {
             ((BeneficiaryFragment) context).getNavigationController().navigate(
-                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) countrySelectFormItem.getValue(), NumberSelectionType.COUNTRY)
+                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((String) countrySelectFormItem.getValue(), NumberSelectionType.COUNTRY)
             );
         } else if (formItem.equals(citySelectFormItem)) {
             ((BeneficiaryFragment) context).getNavigationController().navigate(
-                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((Integer) citySelectFormItem.getValue(), NumberSelectionType.CITY)
+                    BeneficiaryFragmentDirections.actionBeneficiaryFragmentToNumbersFragment((String) citySelectFormItem.getValue(), NumberSelectionType.CITY)
             );
         }
     }
@@ -277,22 +280,23 @@ public class BeneficiaryForm implements Form , ValueChangeObserver, SelectionObs
     @Override
     public void onValidationFailure(FormItem formItem) {
         if (formItem.equals(accountNumberFormItem)) {
-            handleFormItemFailure((EditableFormItem) formItem,"invalid account number");
+            handleFormItemFailure(accountNumberFormItem, "invalid account number");
         } else if (formItem.equals(addressFormItem)) {
-            handleFormItemFailure((EditableFormItem) formItem,"Invalid Address");
+            handleFormItemFailure(addressFormItem, "Invalid Address");
+        } else if (formItem.equals(currencySelectFormItem)) {
+            handleFormItemFailure(currencySelectFormItem, "currency must be selected");
         }
     }
-    private void handleFormItemFailure(EditableFormItem formItem,String errorMessage){
+
+    private void handleFormItemFailure(EditableFormItem formItem, String errorMessage) {
         int formItemIndex = getFormItemPosition(formItem);
         formItem.setError(errorMessage);
         listener.updateView(formItemIndex);
-        listener.scrollToPosition(formItemIndex);
     }
 
-    private void handleFormItemFailure(SelectableFormItem formItem, String errorMessage){
+    private void handleFormItemFailure(SelectableFormItem formItem, String errorMessage) {
         int formItemIndex = getFormItemPosition(formItem);
-        //formItem.setError(errorMessage);
+        formItem.setError(errorMessage);
         listener.updateView(formItemIndex);
-        listener.scrollToPosition(formItemIndex);
     }
 }
