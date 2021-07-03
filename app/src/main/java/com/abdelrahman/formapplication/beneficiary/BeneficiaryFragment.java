@@ -13,15 +13,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.SharedViewModel;
 import com.abdelrahman.formapplication.adapter.FormAdapter;
 import com.abdelrahman.formapplication.databinding.FragmentBeneficiaryBinding;
-import com.abdelrahman.formapplication.listeners.UpdateView;
 
-public class BeneficiaryFragment extends Fragment implements UpdateView {
+public class BeneficiaryFragment extends Fragment {
     private FragmentBeneficiaryBinding binding;
     private FormAdapter adapter;
     private BeneficiaryForm beneficiaryForm;
@@ -32,7 +30,7 @@ public class BeneficiaryFragment extends Fragment implements UpdateView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        beneficiaryForm = new BeneficiaryForm(this, this);
+        beneficiaryForm = new BeneficiaryForm(this);
         adapter = new FormAdapter(beneficiaryForm.getFormItems());
     }
 
@@ -40,15 +38,15 @@ public class BeneficiaryFragment extends Fragment implements UpdateView {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_beneficiary, container, false);
+        beneficiaryForm.setFormView(binding.formView);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.rv.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.rv.setAdapter(adapter);
-        binding.btn.setOnClickListener(v -> Toast.makeText(getContext(),beneficiaryForm.isValid()+"" , Toast.LENGTH_SHORT).show());
+        binding.formView.setAdapter(adapter);
+        binding.btn.setOnClickListener(v -> Toast.makeText(getContext(), beneficiaryForm.isValid() + "", Toast.LENGTH_SHORT).show());
         viewModel.getSelectedCurrency().observe(getViewLifecycleOwner(),
                 o -> beneficiaryForm
                         .getCurrencySelectFormItem()
@@ -74,18 +72,4 @@ public class BeneficiaryFragment extends Fragment implements UpdateView {
         return Navigation.findNavController(requireView());
     }
 
-    @Override
-    public void updateView(int position) {
-        adapter.notifyItemChanged(position);
-    }
-
-    @Override
-    public void notifyDataChange() {
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void scrollToPosition(int position) {
-        binding.rv.post(() -> binding.rv.smoothScrollToPosition(position));
-    }
 }

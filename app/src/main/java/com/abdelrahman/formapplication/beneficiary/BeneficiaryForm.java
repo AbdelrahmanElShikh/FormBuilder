@@ -5,6 +5,7 @@ import android.text.InputType;
 import androidx.fragment.app.Fragment;
 
 import com.abdelrahman.formapplication.R;
+import com.abdelrahman.formapplication.formView.FormView;
 import com.abdelrahman.formapplication.forms.Form;
 import com.abdelrahman.formapplication.forms.FormItem;
 import com.abdelrahman.formapplication.forms.edit.EditFormItem;
@@ -13,18 +14,16 @@ import com.abdelrahman.formapplication.forms.select.SelectFormItem;
 import com.abdelrahman.formapplication.forms.select.SelectableFormItem;
 import com.abdelrahman.formapplication.forms.switchitem.SwitchFormItem;
 import com.abdelrahman.formapplication.listeners.SelectionObserver;
-import com.abdelrahman.formapplication.listeners.UpdateView;
 import com.abdelrahman.formapplication.listeners.ValidationFailedObserver;
 import com.abdelrahman.formapplication.listeners.ValueChangeObserver;
 import com.abdelrahman.formapplication.model.Beneficiary;
 import com.abdelrahman.formapplication.numbers.NumberSelectionType;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObserver, ValidationFailedObserver {
-    private final UpdateView listener;
+    private FormView formView;
     private final Fragment context;
 
     private final Beneficiary beneficiary = new Beneficiary();
@@ -139,9 +138,11 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
                     .isSelectable(false)
                     .build();
 
+    public void setFormView(FormView formView) {
+        this.formView = formView;
+    }
 
-    public BeneficiaryForm(UpdateView listener, Fragment context) {
-        this.listener = listener;
+    public BeneficiaryForm(Fragment context) {
         this.context = context;
         beneficiaryFormItems.add(accountNumberFormItem);
         beneficiaryFormItems.add(currencySelectFormItem);
@@ -190,7 +191,7 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
     public void onValueChange(FormItem formItem, Object changedValue) {
         if (formItem instanceof EditableFormItem)
             ((EditableFormItem) formItem).setError(null);
-        if(formItem instanceof SelectableFormItem)
+        if (formItem instanceof SelectableFormItem)
             ((SelectableFormItem) formItem).setError(null);
         if (formItem.equals(addressFormItem)) {
             String changedValueString = (String) changedValue;
@@ -198,21 +199,21 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
             addressFormItem.setError(null);
             if (changedValueString.length() >= 4) {
                 addressFormItem.setError("error");
-                listener.updateView(getFormItemPosition(addressFormItem));
+                formView.updateView(getFormItemPosition(addressFormItem));
             }
         } else if (formItem.equals(currencySelectFormItem)) {
             currencySelectFormItem.setValue(changedValue);
-            listener.updateView(getFormItemPosition(currencySelectFormItem));
+            formView.updateView(getFormItemPosition(currencySelectFormItem));
             beneficiary.setAccountCurrencyCode(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(countrySelectFormItem)) {
             countrySelectFormItem.setValue(changedValue);
-            listener.updateView(getFormItemPosition(countrySelectFormItem));
+            formView.updateView(getFormItemPosition(countrySelectFormItem));
             citySelectFormItem.setIsSelectable(true);
-            listener.updateView(getFormItemPosition(citySelectFormItem));
+            formView.updateView(getFormItemPosition(citySelectFormItem));
             beneficiary.setCountryId(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(citySelectFormItem)) {
             citySelectFormItem.setValue(changedValue);
-            listener.updateView(getFormItemPosition(citySelectFormItem));
+            formView.updateView(getFormItemPosition(citySelectFormItem));
             beneficiary.setCityId(Integer.parseInt(changedValue.toString()));
         } else if (formItem.equals(otherBankSwitch) && (boolean) changedValue) {
             addOtherBankFormItems();
@@ -241,8 +242,8 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         beneficiaryFormItems.remove(swiftCityFormItem);
         beneficiaryFormItems.remove(swiftBranchFormItem);
         beneficiaryFormItems.remove(swiftAddressFormItem);
-        listener.notifyDataChange();
-        listener.scrollToPosition(getFormItemPosition(otherBankSwitch));
+        formView.notifyDataChange();
+        formView.scrollToPosition(getFormItemPosition(otherBankSwitch));
     }
 
     private void addOtherBankFormItems() {
@@ -252,8 +253,8 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
         beneficiaryFormItems.add(swiftCityFormItem);
         beneficiaryFormItems.add(swiftBranchFormItem);
         beneficiaryFormItems.add(swiftAddressFormItem);
-        listener.notifyDataChange();
-        listener.scrollToPosition(beneficiaryFormItems.size());
+        formView.notifyDataChange();
+        formView.scrollToPosition(beneficiaryFormItems.size());
     }
 
     private int getFormItemPosition(FormItem formItem) {
@@ -291,12 +292,12 @@ public class BeneficiaryForm implements Form, ValueChangeObserver, SelectionObse
     private void handleFormItemFailure(EditableFormItem formItem, String errorMessage) {
         int formItemIndex = getFormItemPosition(formItem);
         formItem.setError(errorMessage);
-        listener.updateView(formItemIndex);
+        formView.updateView(formItemIndex);
     }
 
     private void handleFormItemFailure(SelectableFormItem formItem, String errorMessage) {
         int formItemIndex = getFormItemPosition(formItem);
         formItem.setError(errorMessage);
-        listener.updateView(formItemIndex);
+        formView.updateView(formItemIndex);
     }
 }
