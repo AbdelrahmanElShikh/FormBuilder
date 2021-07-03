@@ -14,10 +14,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.abdelrahman.form.databinding.FragmentNumbersBinding;
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.SharedViewModel;
 import com.abdelrahman.formapplication.adapter.NumberAdapter;
-import com.abdelrahman.formapplication.databinding.FragmentNumbersBinding;
 
 public class NumbersFragment extends Fragment implements OnNumberClick {
     private SharedViewModel viewModel;

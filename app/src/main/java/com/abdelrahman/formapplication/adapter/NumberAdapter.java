@@ -12,6 +12,7 @@ import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.databinding.TextItemBinding;
 import com.abdelrahman.formapplication.numbers.OnNumberClick;
 
+
 public class NumberAdapter extends RecyclerView.Adapter<NumberAdapter.NumberViewHolder> {
     private final OnNumberClick listener;
     private final String selectedNumber;

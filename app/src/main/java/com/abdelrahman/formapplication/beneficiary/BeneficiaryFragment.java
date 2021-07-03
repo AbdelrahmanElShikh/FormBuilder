@@ -14,9 +14,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.abdelrahman.form.adapter.FormAdapter;
 import com.abdelrahman.formapplication.R;
 import com.abdelrahman.formapplication.SharedViewModel;
-import com.abdelrahman.formapplication.adapter.FormAdapter;
 import com.abdelrahman.formapplication.databinding.FragmentBeneficiaryBinding;
 
 public class BeneficiaryFragment extends Fragment {

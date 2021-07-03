@@ -1,2 +1,3 @@
+include ':form'
 rootProject.name = "FormApplication"
 include ':app'
